@@ -26,6 +26,7 @@ export default class GmailAPI {
   }
 
   _request(url) {
+    console.log(url);
     return fetch(url).
       then((response) => {
         return response.json()
@@ -45,10 +46,11 @@ export default class GmailAPI {
   }
 
   _buildQueryString(data)  {
-    var query = "?";
+    // var query = "?";
+    var params = [];
     Object.keys(data).forEach((key) => {
-      query += `${key}=${data[key]}`
+      params.push(`${key}=${data[key]}`);
     });
-    return query;
+    return "?" + params.join("&");
   }
 }

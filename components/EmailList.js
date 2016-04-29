@@ -30,7 +30,7 @@ export default class EmailList extends Component {
 
   renderEmail(email) {
     return (
-      <EmailListItem email={email} />
+      <EmailListItem navigator={this.props.navigator} email={email} />
     )
   }
 

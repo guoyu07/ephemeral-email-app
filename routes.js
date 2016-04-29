@@ -1,6 +1,7 @@
 import LoadingView from './components/LoadingView';
 import SigninView from "./components/SigninView";
 import EmailsView from './components/EmailsView';
+import EmailView from './components/EmailView';
 
 const ROUTES = {
   loading: {
@@ -27,6 +28,13 @@ const ROUTES = {
   slideTo(route, navigator) {
     navigator.immediatelyResetRouteStack([]);
     navigator.push(route);
+  },
+  email: {
+    name: "Email",
+    component: EmailView,
+    onForward: (navigator) => {},
+    onBack: (navigator) => {},
+    index: 3
   }
 };
 

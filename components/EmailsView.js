@@ -10,6 +10,8 @@ import EmailList from './EmailList';
 import async from 'async';
 import _ from 'underscore';
 import dummy from './dummy';
+import NavigationBar from 'react-native-navbar';
+import Store from '../lib/Store';
 
 console.log('async', async);
 
@@ -17,41 +19,53 @@ export default class EmailsView extends Component {
 
   constructor(props) {
     super(props);
-    this.state = {};
+    this.state = {
+      emails: []
+    };
   }
 
   componentDidMount() {
 
-    // THE CODE FOR ACTUAL REQUESTS
+    var {user} = this.props;
+    this.gmail = new GmailAPI(user.id, user.accessToken);
 
-    // var {user} = this.props;
-    // this.gmail = new GmailAPI(user.id, user.accessToken);
-
-    // this.gmail.getThreads().then((body)=>{
-    //   var threads = body.threads;
-    //   return threads.slice(0, 3);
-    // })
-    // .then((threads) => {
-    //   async.map(threads, (thread, callback) =>{
-    //     this.gmail.getThread(thread.id)
-    //       .then((thread)=>{
-    //         if (thread.error) {
-    //           callback(null, null);
-    //         } else {
-    //           callback(null, thread);
-    //         }
-    //       });
-    //   }, (err, threads) => {
-    //     this.setState({emails: _.compact(threads)});
-    //   })
-    // });
-    this.setState({emails: dummy});
+    this.gmail.getThreads({labelIds: "INBOX", maxResults: 7}).then((body)=>{
+      console.log(body);
+      return body.threads;
+    })
+    .then((threads) => {
+      async.map(threads, (thread, callback) =>{
+        this.gmail.getThread(thread.id)
+          .then((thread)=>{
+            if (thread.error) {
+              callback(null, null);
+            } else {
+              thread = {
+                id: thread.id,
+                historyId: thread.historyId,
+                messages: thread.messages.map(({id, payload, internalDate})=>{
+                  return {id, payload, internalDate}
+                })
+              }
+              callback(null, thread);
+            }
+          });
+      }, (err, threads) => {
+        Store.setThreads(threads).
+          then(Store.getLiveThreads).
+          then((threads)=>{
+            this.setState({emails: threads});
+          });
+      })
+    });
   }
 
   render() {
     return (
       <View style={styles.container}>
-        <EmailList emails={this.state.emails} />
+        <NavigationBar
+          title={{title: 'Hello'}} />
+        <EmailList emails={this.state.emails} navigator={this.props.navigator} />
       </View>
     );
   }
@@ -60,9 +74,8 @@ export default class EmailsView extends Component {
 
 const styles = StyleSheet.create({
   container: {
-    marginTop: 50,
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center'
+    // justifyContent: 'center',
+    // alignItems: 'center'
   }
 });

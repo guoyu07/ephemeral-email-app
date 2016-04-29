@@ -3,6 +3,7 @@ import React, {
   StyleSheet,
   Text,
   View,
+  AsyncStorage
 } from 'react-native';
 
 import Store from '../lib/Store';
@@ -12,6 +13,14 @@ import GmailAPI from '../gmail';
 export default class LoadingView extends Component {
 
   componentDidMount() {
+
+    // AsyncStorage.getAllKeys().then((keys)=>{console.log(keys)});
+    AsyncStorage.getItem("live_threads").then((data)=>{
+      console.log(data);
+    });
+
+    // AsyncStorage.clear();
+
     Store.getUser().then((user)=>{
       if (user) {
 

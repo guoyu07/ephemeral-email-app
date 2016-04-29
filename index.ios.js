@@ -27,6 +27,7 @@ class UberForSnapchatters extends Component {
       <route.component
         name={route.name}
         user={route.user}
+        email={route.email}
         navigator={navigator}
         onForward={()=>route.onForward(navigator)}
         onBack={()=> route.onBack(navigator)} />
